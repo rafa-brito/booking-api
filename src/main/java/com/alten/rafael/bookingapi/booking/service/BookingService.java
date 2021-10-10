@@ -24,43 +24,43 @@ public class BookingService {
 
     private final BookingRepository repository;
 
-    public Booking findReservationByDate(LocalDate date) {
+    public Booking findBookingByDate(LocalDate date) {
         BookingValidator.checkIfDateIsNull(date);
         return repository.findByDateInEquals(date);
     }
 
-    public Set<Booking> findAllReservationsByDates(LocalDate dateIn, LocalDate dateOut) {
+    public Set<Booking> findAllBookingsByDates(LocalDate dateIn, LocalDate dateOut) {
         BookingValidator.checkIfDatesAreValid(dateIn, dateOut);
-        return findReservationsWithSameDates(dateIn, dateOut);
+        return findBookingsWithSameDates(dateIn, dateOut);
     }
 
-    public Booking cancelReservation(Long reservationId) {
-        Booking booking = repository.findById(reservationId).orElseThrow(() -> new BookingException("reservation not found!"));
+    public Booking cancelBooking(Long bookingId) {
+        Booking booking = repository.findById(bookingId).orElseThrow(() -> new BookingException("booking not found!"));
         booking.setStatus(BookingStatus.CANCELED);
         return repository.save(booking);
     }
 
-    public Booking saveReservation(Booking booking) {
+    public Booking saveBooking(Booking booking) {
         BookingValidator.checkIfDatesAreValid(booking.getDateIn(), booking.getDateOut());
         BookingValidator.checkIfStayIsTooLong(booking.getDateIn(), booking.getDateOut());
         BookingValidator.checkIfStayIsTooAdvanced(booking.getDateIn());
         BookingValidator.checkIfStayStartsAtLeastTomorrow(booking.getDateIn());
 
-        Set<Booking> reservations = findReservationsWithSameDates(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfExistReservationConflict(reservations);
+        Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfExistBookingConflict(bookings);
 
         booking.setStatus(BookingStatus.APPROVED);
         return repository.save(booking);
     }
 
-    private Set<Booking> findReservationsWithSameDates(LocalDate dateIn, LocalDate dateOut) {
+    private Set<Booking> findBookingsWithSameDates(LocalDate dateIn, LocalDate dateOut) {
         List<LocalDate> datesBetween = getDatesBetween(dateIn, dateOut);
-        Set<Booking> reservations = new HashSet<>();
+        Set<Booking> bookings = new HashSet<>();
         datesBetween.forEach(date -> {
-            reservations.addAll(repository.findAllByDateInLessThanEqualAndDateOutGreaterThanEqual(
+            bookings.addAll(repository.findAllByDateInLessThanEqualAndDateOutGreaterThanEqual(
                     date, date));
         });
-        return reservations;
+        return bookings;
     }
 
     private List<LocalDate> getDatesBetween(LocalDate startDate, LocalDate endDate) {

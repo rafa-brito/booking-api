@@ -18,24 +18,24 @@ public class BookingController {
     private BookingService service;
 
     @GetMapping("/booking/{date}")
-    public Booking getReservation(@PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        return service.findReservationByDate(date);
+    public Booking getBooking(@PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        return service.findBookingByDate(date);
     }
 
     @GetMapping
-    public Set<Booking> getReservationByRange(
+    public Set<Booking> getBookingByRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateIn,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOut){
-        return  service.findAllReservationsByDates(dateIn, dateOut);
+        return  service.findAllBookingsByDates(dateIn, dateOut);
     }
 
     @PostMapping("/booking")
-    public Booking makeReservation(@Valid @RequestBody Booking booking){
-        return service.saveReservation(booking);
+    public Booking makeBooking(@Valid @RequestBody Booking booking){
+        return service.saveBooking(booking);
     }
 
     @DeleteMapping("/booking/{id}")
-    public Booking cancelReservation(@PathVariable("date") Long id){
-        return service.cancelReservation(id);
+    public Booking cancelBooking(@PathVariable("date") Long id){
+        return service.cancelBooking(id);
     }
 }

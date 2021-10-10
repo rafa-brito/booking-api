@@ -35,20 +35,20 @@ public class BookingValidator {
 
     public static void checkIfStayIsTooAdvanced(LocalDate dateIn) {
         if(ChronoUnit.DAYS.between(LocalDate.now(), dateIn) > MAX_ADVANCE_PERIOD){
-            throw new BookingException(String.format("the reservation cannot be %d days after today!", MAX_ADVANCE_PERIOD));
+            throw new BookingException(String.format("the booking cannot be %d days after today!", MAX_ADVANCE_PERIOD));
         }
     }
 
     public static void checkIfStayStartsAtLeastTomorrow(LocalDate dateIn) {
         if(!dateIn.isAfter(LocalDate.now())){
-            throw new BookingException("the reservation cannot start before tomorrow!");
+            throw new BookingException("the booking cannot start before tomorrow!");
         }
     }
 
-    public static void checkIfExistReservationConflict(Set<Booking> possibleConflicts) {
+    public static void checkIfExistBookingConflict(Set<Booking> possibleConflicts) {
         possibleConflicts.forEach(r ->{
             if(BookingStatus.APPROVED.equals(r.getStatus()))
-                throw new BookingException("there are active reservations that conflict with the booking!");
+                throw new BookingException("there are active bookings that conflict with the booking!");
         });
     }
 }
