@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByDateinGreaterThanEqualAndDateoutLessThanEqual(LocalDate dateIn, LocalDate dateOut);
+    Booking findByDateInEquals(LocalDate dateIn);
+
+    List<Booking> findAllByDateInLessThanEqualAndDateOutGreaterThanEqual(LocalDate dateIn, LocalDate dateOut);
 }

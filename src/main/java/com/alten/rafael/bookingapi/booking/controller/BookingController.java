@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @RestController
@@ -22,8 +22,8 @@ public class BookingController {
         return service.findReservationByDate(date);
     }
 
-    @GetMapping("/booking/{date}")
-    public List<Booking> getReservationByRange(
+    @GetMapping
+    public Set<Booking> getReservationByRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateIn,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOut){
         return  service.findAllReservationsByDates(dateIn, dateOut);
@@ -34,8 +34,8 @@ public class BookingController {
         return service.saveReservation(booking);
     }
 
-    @DeleteMapping("/booking")
-    public Booking cancelReservation(@Valid @RequestBody Booking booking){
-        return service.cancelReservation(booking);
+    @DeleteMapping("/booking/{id}")
+    public Booking cancelReservation(@PathVariable("date") Long id){
+        return service.cancelReservation(id);
     }
 }
