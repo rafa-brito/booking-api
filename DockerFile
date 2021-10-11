@@ -1,0 +1,7 @@
+FROM openjdk:11
+
+COPY . /usr/src/booking-api
+RUN ./gradlew bootJar
+WORKDIR /usr/src/booking-api/build/libs
+RUN mv booking-api-* booking-api
+CMD ["java -jar", "booking-api"]
