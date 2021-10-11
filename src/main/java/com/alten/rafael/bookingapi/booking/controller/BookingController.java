@@ -40,7 +40,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/booking/{id}")
-    public Booking cancelBooking(@PathVariable("date") Long id){
+    public Booking cancelBooking(@PathVariable("id") Long id){
         return service.cancelBooking(id);
     }
 }

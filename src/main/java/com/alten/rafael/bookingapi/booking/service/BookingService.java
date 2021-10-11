@@ -20,7 +20,8 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class BookingService {
 
-    public static final int LAST_DAY = 1;
+    private static final int LAST_DAY = 1;
+    private enum Operation {SAVE, MODIFY}
 
     private final BookingRepository repository;
 
@@ -41,35 +42,36 @@ public class BookingService {
     }
 
     public Booking saveBooking(Booking booking) {
-        BookingValidator.checkIfDatesAreValid(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfStayIsTooLong(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfStayIsTooAdvanced(booking.getDateIn());
-        BookingValidator.checkIfStayStartsAtLeastTomorrow(booking.getDateIn());
-
-        Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfExistBookingConflict(bookings);
-
+        validateBookingConsistence(booking, Operation.SAVE);
         booking.setStatus(BookingStatus.APPROVED);
         return repository.save(booking);
     }
 
     public Booking modifyBooking(Booking booking) {
-        BookingValidator.checkIfIdIsValid(booking.getId());
-        BookingValidator.checkIfDatesAreValid(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfStayIsTooLong(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfStayIsTooAdvanced(booking.getDateIn());
-        BookingValidator.checkIfStayStartsAtLeastTomorrow(booking.getDateIn());
-
-        Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
-        BookingValidator.checkIfExistBookingConflict(bookings);
-
+        validateBookingConsistence(booking, Operation.MODIFY);
         Booking previousBooking = repository.findById(booking.getId()).orElseThrow(() -> new BookingException("booking Id not found!"));
-
         BookingValidator.checkIfPreviousBookingIsValid(previousBooking);
 
         previousBooking.setDateIn(booking.getDateIn());
         previousBooking.setDateOut(booking.getDateOut());
         return repository.save(previousBooking);
+    }
+
+    private void validateBookingConsistence(Booking booking, Operation operation) {
+        BookingValidator.checkIfDatesAreValid(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfStayIsTooLong(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfStayIsTooAdvanced(booking.getDateIn());
+        BookingValidator.checkIfStayStartsAtLeastTomorrow(booking.getDateIn());
+
+        if(Operation.SAVE.equals(operation)){
+            Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
+            BookingValidator.checkIfExistBookingConflict(bookings);
+        } else {
+            BookingValidator.checkIfIdIsValid(booking.getId());
+            Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
+            bookings.removeIf(b -> b.getId().equals(booking.getId()));
+            BookingValidator.checkIfExistBookingConflict(bookings);
+        }
     }
 
     private Set<Booking> findBookingsWithSameDates(LocalDate dateIn, LocalDate dateOut) {
