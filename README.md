@@ -16,7 +16,7 @@ if you have docker-compose configured on your machine you can just run the follo
 ```
 docker-compose up -d
 ```
-If you don't have docker-compose, make sure that the credentials defined on application.properties match with your local MySQL instance
+If you don't have docker-compose, make sure that the credentials defined on **application.properties** match with your local MySQL instance
 
 After guarantee that DB is running, just run the following command:
 ```
