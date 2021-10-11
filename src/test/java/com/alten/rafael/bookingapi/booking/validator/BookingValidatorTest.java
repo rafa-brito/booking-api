@@ -103,4 +103,22 @@ class BookingValidatorTest {
             BookingValidator.checkIfExistBookingConflict(bookings);
         });
     }
+
+    @Test
+    void checkIfPreviousBookingIsValidWithSuccess() {
+        Booking booking = new Booking();
+        booking.setStatus(BookingStatus.APPROVED);
+        assertDoesNotThrow(() ->{
+            BookingValidator.checkIfPreviousBookingIsValid(booking);
+        });
+    }
+
+    @Test
+    void checkIfPreviousBookingIsValidWithError() {
+        Booking booking = new Booking();
+        booking.setStatus(BookingStatus.CANCELED);
+        assertThrows(BookingException.class, () ->{
+            BookingValidator.checkIfPreviousBookingIsValid(booking);
+        });
+    }
 }

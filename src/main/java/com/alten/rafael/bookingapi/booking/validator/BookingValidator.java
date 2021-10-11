@@ -51,4 +51,14 @@ public class BookingValidator {
                 throw new BookingException("there are active bookings that conflict with the booking!");
         });
     }
+
+    public static void checkIfIdIsValid(Long id) {
+        if(Objects.isNull(id))
+            throw new BookingException("invalid booking ID!");
+    }
+
+    public static void checkIfPreviousBookingIsValid(Booking booking) {
+        if(BookingStatus.CANCELED.equals(booking.getStatus()))
+            throw new BookingException("this booking is already canceled!");
+    }
 }

@@ -53,6 +53,25 @@ public class BookingService {
         return repository.save(booking);
     }
 
+    public Booking modifyBooking(Booking booking) {
+        BookingValidator.checkIfIdIsValid(booking.getId());
+        BookingValidator.checkIfDatesAreValid(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfStayIsTooLong(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfStayIsTooAdvanced(booking.getDateIn());
+        BookingValidator.checkIfStayStartsAtLeastTomorrow(booking.getDateIn());
+
+        Set<Booking> bookings = findBookingsWithSameDates(booking.getDateIn(), booking.getDateOut());
+        BookingValidator.checkIfExistBookingConflict(bookings);
+
+        Booking previousBooking = repository.findById(booking.getId()).orElseThrow(() -> new BookingException("booking Id not found!"));
+
+        BookingValidator.checkIfPreviousBookingIsValid(previousBooking);
+
+        previousBooking.setDateIn(booking.getDateIn());
+        previousBooking.setDateOut(booking.getDateOut());
+        return repository.save(previousBooking);
+    }
+
     private Set<Booking> findBookingsWithSameDates(LocalDate dateIn, LocalDate dateOut) {
         List<LocalDate> datesBetween = getDatesBetween(dateIn, dateOut);
         Set<Booking> bookings = new HashSet<>();

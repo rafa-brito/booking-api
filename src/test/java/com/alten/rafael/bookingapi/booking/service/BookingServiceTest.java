@@ -12,10 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,7 +64,7 @@ class BookingServiceTest {
         //GIVEN
         Booking expectedBooking = new Booking();
         //WHEN
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(expectedBooking));
+        when(repository.findById(1L)).thenReturn(Optional.of(expectedBooking));
         service.cancelBooking(1L);
         //THEN
         verify(repository, times(1)).save(expectedBooking);
@@ -87,6 +84,28 @@ class BookingServiceTest {
         //THEN
         verify(repository, times(1)).save(expectedBooking);
         assertEquals(expectedBooking.getStatus(), BookingStatus.APPROVED, "the booking should have status changed to APPROVED");
+
+    }
+
+    @Test
+    void modifyBooking() {
+        //GIVEN
+        Booking previousBooking = new Booking();
+        previousBooking.setId(1L);
+        previousBooking.setDateIn(LocalDate.now().plusDays(1L));
+        previousBooking.setDateOut(LocalDate.now().plusDays(2L));
+        Booking expectedBooking = new Booking();
+        expectedBooking.setId(1L);
+        expectedBooking.setDateIn(LocalDate.now().plusDays(5L));
+        expectedBooking.setDateOut(LocalDate.now().plusDays(6L));
+        //WHEN
+        when(repository.findAllByDateInLessThanEqualAndDateOutGreaterThanEqual(any(), any())).thenReturn(new ArrayList<>());
+        when(repository.findById(1L)).thenReturn(Optional.of(previousBooking));
+        service.modifyBooking(expectedBooking);
+        //THEN
+        verify(repository, times(1)).save(previousBooking);
+        assertEquals(previousBooking.getDateIn(), expectedBooking.getDateIn(), "the date in should match the expected");
+        assertEquals(previousBooking.getDateOut(), expectedBooking.getDateOut(), "the date in should match the expected");
 
     }
 }

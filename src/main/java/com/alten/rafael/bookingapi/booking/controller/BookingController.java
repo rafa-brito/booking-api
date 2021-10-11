@@ -34,6 +34,11 @@ public class BookingController {
         return service.saveBooking(booking);
     }
 
+    @PutMapping("/booking")
+    public Booking changeBooking(@Valid @RequestBody Booking booking){
+        return service.modifyBooking(booking);
+    }
+
     @DeleteMapping("/booking/{id}")
     public Booking cancelBooking(@PathVariable("date") Long id){
         return service.cancelBooking(id);
